@@ -1,7 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <vector>
-#include <algorithm>
 
 class PermutationGenerator {
 private:
@@ -25,36 +23,25 @@ public:
     memcpy(minRoutes, route, n*sizeof(int));
   }
 
-  void swap(int *first, int *second) {
-    int temp = *first;
-    *first = *second;
-    *second = temp;
-  }
-
   void swap(int first, int second) {
     int temp = route[first];
     route[first] = route[second];
     route[second] = temp;
   }
   
-  int sumRoute(int step, int s) {
-    if (step == 0) return s; 
-    return s + M[route[step-1]*N + route[step]];
-  }
-
   void backtrack(int step, int s) {
     if (step == n) {
-      s = sumRoute(step, s);
-      if (s >= minRoute) return;
-      dup(s);
-//      p(route,step,s);
+      s += M[route[step-1]*N + route[step]]; 
+      if (s < minRoute) dup(s);
       return;
     }
     for (int i = step; i <= n; ++i) {
-//      swap(&route[step], &route[i]);
       swap(step, i);
-      backtrack(step+1, sumRoute(step, s));
-//      swap(&route[i], &route[step]);
+      int s1 = s;
+      if (step > 0) 
+        s1 += M[route[step-1]*N + route[step]];
+      if (s1 >= minRoute) return;
+      backtrack(step+1, s1);
       swap(i, step);
     }
   }
